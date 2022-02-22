@@ -1,2 +1,2 @@
 # EmulatorChip8
-Simple Chip 8 Emulator
+A very simple chip-8 emulator.
