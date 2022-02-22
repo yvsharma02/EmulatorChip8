@@ -1,0 +1,13 @@
+# Extensions
+
+*.user
+*.sln
+*.vcxproj
+*.vcxproj.filters
+
+# Folders
+
+.vs/
+
+Generated/
+ThirdParty/bin
