@@ -17,7 +17,7 @@ workspace (SOLUTION_NAME)
 
 project (MAIN_PROJECT_NAME)
     location (MAIN_PROJECT_NAME)
-    kind "ConsoleApp"
+    kind "WindowedApp"
     language "C++"
 
     targetdir (BIN_DIR)
@@ -38,8 +38,8 @@ project (MAIN_PROJECT_NAME)
 
     filter "system:windows"
         cppdialect "C++17"
-        staticruntime "on"
         systemversion "latest"
+        defines "PLATFORM_WINDOWS"
 
     filter "configurations:Debug"
         symbols "on"
