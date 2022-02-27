@@ -24,8 +24,11 @@ namespace Chip8
 
 		void clear();
 
+		~C8Window();
+
 		// colors are set row-wise (0, 0), (1, 0), (2, 0).... (0, 1), (1, 1)....
-		void set_colors(c8byte* colors);
+		// The array will be COPIED, not REFERENCED.
+		void set_colors(c8byte* clrs);
 
 		// keycode here is the actual physical kerboard keycode. Not the chip8 specific one.
 		bool is_key_pressed(c8byte keyboard);
@@ -33,6 +36,9 @@ namespace Chip8
 	private:
 		int unscaled_height;
 		int unscaled_width;
+		COLORREF* colors; // Length is 3x beccause although we only really need one value, the display output needs 3.
+		bool modifyingColors;
+
 #if PLATFORM_WINDOWS
 		HWND hwnd;
 		static LRESULT CALLBACK Chip8::C8Window::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);

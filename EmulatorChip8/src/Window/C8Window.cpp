@@ -35,16 +35,23 @@ LRESULT CALLBACK Chip8::C8Window::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LP
 
 		case WM_PAINT:
 		{
-			PAINTSTRUCT ps;
-			HDC hdc = BeginPaint(hwnd, &ps);
-
 			C8Window* instance = (C8Window*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+			if (!instance->modifyingColors)
+			{
+				PAINTSTRUCT ps;
+				HDC hdc = BeginPaint(hwnd, &ps);
 
-			for (int i = 0; i < instance->unscaled_width; i++)
-				for (int j = 0; j < instance->unscaled_height; j++)
-					SetPixel(hdc, i, j, (i + j) % 255);
+				HBITMAP bmp = CreateBitmap(instance->unscaled_height, instance->unscaled_width, 1, 8 * 4, (void*)instance->colors);
+				HDC src = CreateCompatibleDC(hdc);
+				SelectObject(src, bmp);
+
+				BitBlt(hdc, 0, 0, instance->unscaled_width, instance->unscaled_height, src, 0, 0, SRCCOPY);
+
+				DeleteDC(hdc);
+				DeleteObject(bmp);
 
 				EndPaint(hwnd, &ps);
+			}
 		}
 
 		default:
@@ -88,13 +95,44 @@ Chip8::C8Window::C8Window(const std::wstring& name, int width, int height, HINST
 			std::string errorMsg = std::to_string(GetLastError());
 			MessageBox(NULL, L"Window Creation Failed!", L"Error!", MB_ICONEXCLAMATION | MB_OK);
 		}
-		SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)this);
 
+		colors = nullptr;
+
+		SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)this);
 		SetLayeredWindowAttributes(hwnd, NULL, 255, LWA_ALPHA);
 
 		ShowWindow(hwnd, nCmdShow);
-//		UpdateWindow(hwnd);
 	}
+}
+
+void Chip8::C8Window::set_colors(c8byte* clrs)
+{
+	modifyingColors = true;
+
+	if (this->colors == nullptr)
+		this->colors = new COLORREF[unscaled_height * unscaled_width];
+
+	int c = 0;
+
+	for (int i = 0; i < unscaled_width; i++)
+	{
+		for (int j = 0; j < unscaled_height; j++)
+		{
+			int index = i * unscaled_width + unscaled_height;
+			
+			COLORREF clr = clrs[index] << 16 | clrs[index] << 8 | clrs[index];
+			
+			this->colors[c++] = clr;
+		}
+	}
+
+	modifyingColors = false;
+}
+
+Chip8::C8Window::~C8Window()
+{
+	if (colors != nullptr)
+		delete colors;
 }
 
 #endif
