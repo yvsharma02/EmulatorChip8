@@ -17,7 +17,7 @@ namespace Chip8
 #if PLATFORM_WINDOWS
 		C8Window(const std::wstring& name, int width, int height, HINSTANCE hInstance, INT nCmdShow);
 
-		void run();
+		void run_for_windows();
 #endif
 		// Color is an byte because c8 window is grayscale anyway.
 		void set_pixel_color(int x, int y, c8byte color);

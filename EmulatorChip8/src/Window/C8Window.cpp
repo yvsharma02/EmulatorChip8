@@ -10,7 +10,7 @@
 
 #if PLATFORM_WINDOWS
 
-void Chip8::C8Window::run()
+void Chip8::C8Window::run_for_windows()
 {
 	MSG Msg;
 	while (GetMessage(&Msg, NULL, 0, 0) > 0)
@@ -105,6 +105,8 @@ Chip8::C8Window::C8Window(const std::wstring& name, int width, int height, HINST
 	}
 }
 
+#endif
+
 void Chip8::C8Window::set_colors(c8byte* clrs)
 {
 	modifyingColors = true;
@@ -118,7 +120,7 @@ void Chip8::C8Window::set_colors(c8byte* clrs)
 	{
 		for (int j = 0; j < unscaled_height; j++)
 		{
-			int index = i * unscaled_width + unscaled_height;
+			int index = i * unscaled_height + j;
 			
 			COLORREF clr = clrs[index] << 16 | clrs[index] << 8 | clrs[index];
 			
@@ -134,5 +136,3 @@ Chip8::C8Window::~C8Window()
 	if (colors != nullptr)
 		delete colors;
 }
-
-#endif
