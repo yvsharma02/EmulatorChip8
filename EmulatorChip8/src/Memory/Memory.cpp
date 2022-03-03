@@ -19,7 +19,7 @@ namespace Chip8
 
 	Memory::~Memory()
 	{
-		delete data;
+		delete[] data;
 	}
 
 	int Memory::size() const
