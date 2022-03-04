@@ -11,7 +11,6 @@ Chip8::C8Window* main_window;
 
 void set_colors(int unscaled_size_x, int unscaled_size_y)
 {
-    /*
     Chip8::c8byte* clrs = new Chip8::c8byte[unscaled_size_x * unscaled_size_y];
     int c = 0;
 
@@ -23,10 +22,10 @@ void set_colors(int unscaled_size_x, int unscaled_size_y)
         }
     }
     
-    delete[] clrs;
-
     main_window->set_colors(clrs);
-    */
+
+    delete[] clrs;
+    /*
     double maxDist = sqrt(unscaled_size_x * unscaled_size_x + unscaled_size_y * unscaled_size_y) / 2.0;
 
     Chip8::c8byte* colors = new Chip8::c8byte[unscaled_size_x * unscaled_size_y];
@@ -44,6 +43,7 @@ void set_colors(int unscaled_size_x, int unscaled_size_y)
     main_window->set_colors(colors);
 
     delete[] colors;
+    */
 }
 
 void onWindowEvent(Chip8::C8EventType type)

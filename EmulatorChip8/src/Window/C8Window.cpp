@@ -39,7 +39,6 @@ namespace Chip8
 			break;
 
 		case WM_SIZE:
-			Sleep(100);
 			instance->update_true_dimensions();
 			instance->window_event_handler.invoke(C8EventType::WINDOW_RESCALE);
 			break;
