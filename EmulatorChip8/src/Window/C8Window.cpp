@@ -40,7 +40,7 @@ namespace Chip8
 
 		case WM_SIZE:
 			instance->update_true_dimensions();
-			instance->window_event_handler.invoke(C8EventType::WINDOW_RESCALE);
+			instance->window_event_handler.invoke(C8EventType::WINDOW_RESCALE, nullptr);
 			break;
 
 		case WM_PAINT:
@@ -60,6 +60,52 @@ namespace Chip8
 				DeleteObject(bmp);
 
 				EndPaint(hwnd, &ps);
+			}
+		}
+		break;
+
+		case WM_KEYDOWN:
+		{
+			for (int i = 0; i < instance->keymap_length; i++)
+			{
+				if (instance->keymap[i].get_actual_key() != (int)wParam)
+					continue;
+
+				// 0th byte for key state. 1st for key pressed (c8 key, not actual key).
+				c8byte data[2] = { 255, instance->keymap[i].get_mapped_key() };
+
+				if (instance->keymap[i].get_state() == C8Keystate::NONE)
+				{
+					instance->keymap[i].set_state(C8Keystate::PRESSED);
+
+					data[0] = C8Keystate::PRESSED;
+					instance->keyboard_event_handler.invoke(Chip8::C8EventType::KEYBOARD_INPUT, data);
+				}
+				else if (instance->keymap[i].get_state() == C8Keystate::PRESSED)
+				{
+					instance->keymap[i].set_state(C8Keystate::CONTINUED_PRESS);
+
+					data[0] = C8Keystate::CONTINUED_PRESS;
+					instance->keyboard_event_handler.invoke(Chip8::C8EventType::KEYBOARD_INPUT, data);
+				}
+			}
+		}
+		break;
+
+		case WM_KEYUP:
+		{
+			for (int i = 0; i < instance->keymap_length; i++)
+			{
+				if (instance->keymap[i].get_actual_key() != (int)wParam)
+					continue;
+
+				if (instance->keymap[i].get_state() == C8Keystate::CONTINUED_PRESS || instance->keymap[i].get_state() == C8Keystate::PRESSED)
+				{
+					instance->keymap[i].set_state(C8Keystate::NONE);
+
+					c8byte data[2] = { C8Keystate::RELEASED, instance->keymap[i].get_mapped_key()};
+					instance->keyboard_event_handler.invoke(C8EventType::KEYBOARD_INPUT, data);
+				}
 			}
 		}
 
@@ -109,6 +155,7 @@ namespace Chip8
 
 			unscaled_colors = nullptr;
 			scaled_colors = nullptr;
+			keymap = nullptr;
 
 			SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)this);
 			SetLayeredWindowAttributes(hwnd, NULL, 255, LWA_ALPHA);
@@ -128,7 +175,6 @@ namespace Chip8
 			true_height  = rect.bottom - rect.top;
 
 			calculate_scaled_colors(true_width, true_height);
-			InvalidateRect(hwnd, nullptr, true);
 			return true;
 		}
 
@@ -167,6 +213,7 @@ namespace Chip8
 		}
 
 		modifying_colors = false;
+		force_redraw();
 	}
 
 	void C8Window::set_colors(c8byte* clrs)
@@ -203,6 +250,37 @@ namespace Chip8
 		window_event_handler.remove_listener(listener);
 	}
 
+	void C8Window::add_keyboard_event_listener(const c8_event_listener& listener)
+	{
+		keyboard_event_handler.add_listener(listener);
+	}
+
+	void C8Window::remove_keyboard_event_listener(const c8_event_listener& listener)
+	{
+		keyboard_event_handler.remove_listener(listener);
+	}
+
+	void C8Window::set_key_map(const Chip8::C8Keymapping* new_keymap, int length)
+	{
+		keymap_length = length;
+		if (keymap != nullptr)
+		{
+			delete [] keymap;
+			keymap = nullptr;
+		}
+
+		char* kmap = new char[sizeof(C8Keymapping) * length];
+		keymap = (C8Keymapping*)kmap;
+
+		for (int i = 0; i < length; i++)
+			keymap[i] = C8Keymapping(new_keymap[i]);
+	}
+
+	void C8Window::force_redraw()
+	{
+		InvalidateRect(hwnd, nullptr, true);
+	}
+
 	C8Window::~C8Window()
 	{
 		if (unscaled_colors != nullptr)
@@ -210,5 +288,8 @@ namespace Chip8
 
 		if (scaled_colors != nullptr)
 			delete[] scaled_colors;
+
+		if (keymap != nullptr)
+			delete[] keymap;
 	}
 }

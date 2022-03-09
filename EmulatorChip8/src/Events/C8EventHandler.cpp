@@ -26,13 +26,13 @@ namespace Chip8
 		}
 	}
 
-	void C8EventHandler::invoke(C8EventType type) const
+	void C8EventHandler::invoke(C8EventType type, void* data) const
 	{
 		std::vector<c8_event_listener>::const_iterator it = event_listeners.begin();
 
 		while (it != event_listeners.end())
 		{
-			(*it)(type);
+			(*it)(type, data);
 			it += 1;
 		}
 	}

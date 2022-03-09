@@ -3,6 +3,7 @@
 #include "pch.h"
 #include "Events/C8EventHandler.h"
 #include "Events/C8EventType.h"
+#include "Input/Keymapping.h"
 
 #if PLATFORM_WINDOWS
 
@@ -48,6 +49,14 @@ namespace Chip8
 
 		void remove_window_event_listener(const c8_event_listener& listener);
 
+		// Parameter has two byte: 0th byte: keycode, 1st byte: Keystate.
+		void add_keyboard_event_listener(const c8_event_listener& listener);
+
+		void remove_keyboard_event_listener(const c8_event_listener& listener);
+
+		// map will be cloned. old one will be discarded completely.
+		void set_key_map(const C8Keymapping* map, int len);
+
 	private:
 		int unscaled_height;
 		int unscaled_width;
@@ -59,11 +68,17 @@ namespace Chip8
 		int true_width;
 
 		C8EventHandler window_event_handler;
+		C8EventHandler keyboard_event_handler;
+
+		C8Keymapping* keymap;
+		int keymap_length;
 
 		// Returns true if dimensions were successfully upddated.
 		bool update_true_dimensions();
 
 		void calculate_scaled_colors(int new_width, int new_height);
+
+		void force_redraw();
 
 #if PLATFORM_WINDOWS
 		HWND hwnd;

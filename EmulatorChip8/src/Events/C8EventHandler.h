@@ -7,14 +7,14 @@ namespace Chip8
 {
 //	typedef void (*c8_event_listener)(C8EventType);
 
-	using c8_event_listener = void(*)(C8EventType);
+	using c8_event_listener = void(*)(C8EventType type, void* data);
 
 	class C8EventHandler
 	{
 	public:
 		C8EventHandler();
 
-		void invoke(C8EventType type) const;
+		void invoke(C8EventType type, void* data) const;
 
 		void remove_listener(const c8_event_listener& listener);
 
