@@ -13,6 +13,7 @@
 namespace Chip8
 {
 	using c8byte = uint8_t;
+	using c8short = uint16_t;
 
 #if PLATFORM_WINDOWS
 	using c8Color = COLORREF;

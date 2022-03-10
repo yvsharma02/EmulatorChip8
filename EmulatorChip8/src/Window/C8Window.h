@@ -3,7 +3,7 @@
 #include "pch.h"
 #include "Events/C8EventHandler.h"
 #include "Events/C8EventType.h"
-#include "Input/Keymapping.h"
+#include "Input/C8Keymapping.h"
 
 #if PLATFORM_WINDOWS
 

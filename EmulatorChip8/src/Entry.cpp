@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "stdio.h"
 #include "Window/C8Window.h"
+#include "IO/IO.h"
+#include "Memory/C8Memory.h"
 #include <math.h>
 
 #include <iostream>
@@ -61,6 +63,7 @@ void on_keyboard_event(Chip8::C8EventType type, void* data)
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nCmdShow)
 {
+
     int unscaled_size_x = 64;
     int unscaled_size_y = 32;
     main_window = new Chip8::C8Window(L"Chip8 Emulator", unscaled_size_x, unscaled_size_y, hInstance, nCmdShow);
@@ -93,6 +96,9 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
     main_window->set_key_map(key_mapping, 16);
 
     set_colors_2(unscaled_size_x, unscaled_size_y);
+
+    Chip8::C8Memory mem = Chip8::C8Memory();
+    bool file_read_success = Chip8::read_rom(L"../TestROMs/chip8-test-rom.ch8", mem, 0x200);
 
     main_window->run_for_windows();
 

@@ -183,6 +183,7 @@ namespace Chip8
 
 #endif
 
+	// maybe create a large buffer instead of constantly allocating and deallocating.
 	void C8Window::calculate_scaled_colors(int true_width, int true_height)
 	{
 		if (unscaled_colors == nullptr)

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "pch.h"
-#include "Input/Keycode.h"
-#include "Input/Keystate.h"
+#include "Input/C8Keycode.h"
+#include "Input/C8Keystate.h"
 
 namespace Chip8
 {
