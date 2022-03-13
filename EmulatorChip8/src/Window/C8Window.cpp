@@ -13,14 +13,22 @@ namespace Chip8
 
 #if PLATFORM_WINDOWS
 	
-	void C8Window::run_for_windows()
+	void C8Window::run()
 	{
-		MSG Msg;
-		while (GetMessage(&Msg, NULL, 0, 0) > 0)
+		while (true)
 		{
-			TranslateMessage(&Msg);
+			MSG msg;
+			while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
+			{
+				TranslateMessage(&msg);
 
-			DispatchMessage(&Msg);
+				DispatchMessage(&msg);
+			}
+
+			if (msg.message == WM_QUIT)
+				break;
+
+			invoke_update_event(nullptr);
 		}
 	}
 
@@ -108,6 +116,7 @@ namespace Chip8
 				}
 			}
 		}
+		break;
 
 		default:
 			return DefWindowProc(hwnd, msg, wParam, lParam);
@@ -115,12 +124,9 @@ namespace Chip8
 		}
 	}
 
-	C8Window::C8Window(const std::wstring& name, int width_unscaled, int height_unscaled, int window_width, int window_height, HINSTANCE hInstance, INT nCmdShow)
+	C8Window::C8Window(const std::wstring& window_name, int window_width, int window_height, HINSTANCE hInstance, INT nCmdShow)
 	{
-		unscaled_height = height_unscaled;
-		unscaled_width = width_unscaled;
-
-		window_event_handler = C8EventHandler();
+		initialise_common_members();
 
 		LPWNDCLASSEXA existing_wc_info = nullptr;
 
@@ -145,7 +151,7 @@ namespace Chip8
 				std::string errorMsg = std::to_string(GetLastError());
 				MessageBox(NULL, (LPCWSTR)errorMsg.c_str(), L"Error!", MB_ICONEXCLAMATION | MB_OK);
 			}
-			hwnd = CreateWindowEx(0, C8_L_WINDOW_CLASS_NAME, name.c_str(), WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, window_width, window_height, NULL, NULL, hInstance, NULL);
+			hwnd = CreateWindowEx(0, C8_L_WINDOW_CLASS_NAME, window_name.c_str(), WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, window_width, window_height, NULL, NULL, hInstance, NULL);
 
 			if (hwnd == NULL)
 			{
@@ -153,19 +159,12 @@ namespace Chip8
 				MessageBox(NULL, L"Window Creation Failed!", L"Error!", MB_ICONEXCLAMATION | MB_OK);
 			}
 
-			scaled_colors_buffer_size = 0;
-
-			unscaled_colors = nullptr;
-			scaled_colors = nullptr;
-			keymap = nullptr;
-
 			SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)this);
 			SetLayeredWindowAttributes(hwnd, NULL, 255, LWA_ALPHA);
 
 			ShowWindow(hwnd, nCmdShow);
 		}
 	}
-
 
 	bool C8Window::update_true_dimensions()
 	{
@@ -183,7 +182,28 @@ namespace Chip8
 		return false;
 	}
 
+	void C8Window::force_redraw()
+	{
+		InvalidateRect(hwnd, nullptr, true);
+	}
+
 #endif
+
+	void C8Window::initialise_common_members()
+	{
+		unscaled_height = UNSCALED_HEIGHT;
+		unscaled_width = UNSCALED_WIDTH;
+
+		window_event_handler = C8EventHandler();
+		update_event_handler = C8EventHandler();
+		keyboard_event_handler = C8EventHandler();
+
+		scaled_colors_buffer_size = 0;
+
+		unscaled_colors = nullptr;
+		scaled_colors = nullptr;
+		keymap = nullptr;
+	}
 
 	// maybe create a large buffer instead of constantly allocating and deallocating.
 	void C8Window::calculate_scaled_colors(int true_width, int true_height)
@@ -192,9 +212,6 @@ namespace Chip8
 			return;
 
 		modifying_colors = true;
-
-//		if (scaled_colors != nullptr)
-//			delete[] scaled_colors;
 
 		long int buffer_size_required = (long int) true_width * (long int) true_height;
 
@@ -229,6 +246,11 @@ namespace Chip8
 		force_redraw();
 	}
 
+	void C8Window::invoke_update_event(void* data)
+	{
+		update_event_handler.invoke(Chip8::C8EventType::UPDATE, data);
+	}
+
 	void C8Window::set_colors(c8byte* clrs)
 	{
 		modifying_colors = true;
@@ -253,6 +275,16 @@ namespace Chip8
 		modifying_colors = false;
 	}
 
+	void C8Window::add_update_event_listener(const c8_event_listener& listener)
+	{
+		update_event_handler.add_listener(listener);
+	}
+
+	void C8Window::remove_update_event_listener(const c8_event_listener& listener)
+	{
+		update_event_handler.remove_listener(listener);
+	}
+
 	void C8Window::add_window_event_listener(const c8_event_listener& listener)
 	{
 		window_event_handler.add_listener(listener);
@@ -275,6 +307,7 @@ namespace Chip8
 
 	void C8Window::set_key_map(const Chip8::C8Keymapping* new_keymap, int length)
 	{
+		// maybe overwrite instead of re allocating?
 		keymap_length = length;
 		if (keymap != nullptr)
 		{
@@ -287,11 +320,6 @@ namespace Chip8
 
 		for (int i = 0; i < length; i++)
 			keymap[i] = C8Keymapping(new_keymap[i]);
-	}
-
-	void C8Window::force_redraw()
-	{
-		InvalidateRect(hwnd, nullptr, true);
 	}
 
 	C8Window::~C8Window()

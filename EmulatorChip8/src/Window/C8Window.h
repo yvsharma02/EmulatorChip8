@@ -12,6 +12,9 @@
 
 #endif
 
+#define UNSCALED_HEIGHT 64
+#define UNSCALED_WIDTH 32
+
 namespace Chip8
 {
 	class C8Window
@@ -20,14 +23,14 @@ namespace Chip8
 
 	public:
 #if PLATFORM_WINDOWS
-		C8Window(const std::wstring& name, int unscaled_width, int unscaled_height, int window_width, int window_height, HINSTANCE hInstance, INT nCmdShow);
-
-		void run_for_windows();
+		C8Window(const std::wstring& name, int window_width, int window_height, HINSTANCE hInstance, INT nCmdShow);
 #endif
 		// Color is an byte because c8 window is grayscale anyway.
 		void set_pixel_color(int x, int y, c8byte color);
 
 		void clear();
+
+		void run();
 
 		~C8Window();
 
@@ -46,13 +49,14 @@ namespace Chip8
 		inline int get_unscaled_width() const { return unscaled_width; }
 
 		void add_window_event_listener(const c8_event_listener& listener);
-
 		void remove_window_event_listener(const c8_event_listener& listener);
 
 		// Parameter has two byte: 0th byte: keycode, 1st byte: Keystate.
 		void add_keyboard_event_listener(const c8_event_listener& listener);
-
 		void remove_keyboard_event_listener(const c8_event_listener& listener);
+
+		void add_update_event_listener(const c8_event_listener& listener);
+		void remove_update_event_listener(const c8_event_listener& listener);
 
 		// map will be cloned. old one will be discarded completely.
 		void set_key_map(const C8Keymapping* map, int len);
@@ -73,6 +77,8 @@ namespace Chip8
 		C8EventHandler window_event_handler;
 		C8EventHandler keyboard_event_handler;
 
+		C8EventHandler update_event_handler;
+
 		C8Keymapping* keymap;
 		int keymap_length;
 
@@ -82,6 +88,11 @@ namespace Chip8
 		void calculate_scaled_colors(int new_width, int new_height);
 
 		void force_redraw();
+
+		// initializes non platform dependent members.
+		void initialise_common_members();
+
+		void invoke_update_event(void* data);
 
 #if PLATFORM_WINDOWS
 		HWND hwnd;

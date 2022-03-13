@@ -2,16 +2,29 @@
 
 namespace Chip8
 {
-	C8Interpreter::C8Interpreter()
+	C8Interpreter::C8Interpreter(C8Window& output_window) : output_window(output_window)
 	{
 		memory = C8Memory();
+		paused = true;
+		
+		display_buffer = new c8byte[UNSCALED_HEIGHT * UNSCALED_WIDTH];
+
 		load_text_sprites();
-//		window = C8Window();
+
+		C8Interpreter* instance_ptr = this;
+
+//		output_window.add_update_event_listener([](C8EventType type, void* data) { instance_ptr->update(type, data); });
+	}
+
+	void C8Interpreter::update(C8EventType type, void* data)
+	{
+		C8Interpreter* instance_ptr = (C8Interpreter*) data;
+		instance_ptr->run();
 	}
 
 	void C8Interpreter::run()
 	{
-
+		output_window.set_colors(display_buffer);
 	}
 
 	void C8Interpreter::load_text_sprites()
@@ -38,5 +51,10 @@ namespace Chip8
 
 		for (int i = 0; i < TEXT_SPRITE_SIZE_BYTES * TEXT_SPRITE_COUNT; i++)
 			memory[TEXT_SPRITE_MEM_STRART + i] = sprites[i];
+	}
+
+	C8Interpreter::~C8Interpreter()
+	{
+		delete[] display_buffer;
 	}
 }

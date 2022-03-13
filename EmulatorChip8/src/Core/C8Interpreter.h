@@ -16,14 +16,18 @@ namespace Chip8
 	class C8Interpreter
 	{
 
-
 	public:
-		C8Interpreter();
-
-		void run();
-
+		C8Interpreter(C8Window& output_window);
+		~C8Interpreter();
+		void play();
+		void pause();
+	
 	private:
+		C8Window& output_window;
+
 		C8Memory memory;
+
+		c8byte* display_buffer;// [UNSCALED_HEIGHT * UNSCALED_WIDTH] ;
 
 		c8byte* registers_8[16];
 		c8short stack[8];
@@ -35,8 +39,12 @@ namespace Chip8
 		c8short program_counter;
 		c8byte stack_pointer;
 
-//		C8Window window;
+		bool paused;
 
 		void load_text_sprites();
+		void run();
+
+		// first element of data containers pointer to this.
+		static void update(C8EventType type, void* data);
 	};
 }
