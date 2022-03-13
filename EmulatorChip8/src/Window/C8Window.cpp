@@ -115,10 +115,10 @@ namespace Chip8
 		}
 	}
 
-	C8Window::C8Window(const std::wstring& name, int width, int height, HINSTANCE hInstance, INT nCmdShow)
+	C8Window::C8Window(const std::wstring& name, int width_unscaled, int height_unscaled, int window_width, int window_height, HINSTANCE hInstance, INT nCmdShow)
 	{
-		unscaled_height = height;
-		unscaled_width = width;
+		unscaled_height = height_unscaled;
+		unscaled_width = width_unscaled;
 
 		window_event_handler = C8EventHandler();
 
@@ -145,13 +145,15 @@ namespace Chip8
 				std::string errorMsg = std::to_string(GetLastError());
 				MessageBox(NULL, (LPCWSTR)errorMsg.c_str(), L"Error!", MB_ICONEXCLAMATION | MB_OK);
 			}
-			hwnd = CreateWindowEx(0, C8_L_WINDOW_CLASS_NAME, name.c_str(), WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, width, height, NULL, NULL, hInstance, NULL);
+			hwnd = CreateWindowEx(0, C8_L_WINDOW_CLASS_NAME, name.c_str(), WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, window_width, window_height, NULL, NULL, hInstance, NULL);
 
 			if (hwnd == NULL)
 			{
 				std::string errorMsg = std::to_string(GetLastError());
 				MessageBox(NULL, L"Window Creation Failed!", L"Error!", MB_ICONEXCLAMATION | MB_OK);
 			}
+
+			scaled_colors_buffer_size = 0;
 
 			unscaled_colors = nullptr;
 			scaled_colors = nullptr;
@@ -191,10 +193,20 @@ namespace Chip8
 
 		modifying_colors = true;
 
-		if (scaled_colors != nullptr)
-			delete[] scaled_colors;
+//		if (scaled_colors != nullptr)
+//			delete[] scaled_colors;
 
-		scaled_colors = new c8Color[(long int)true_width * (long int)true_height];
+		long int buffer_size_required = (long int) true_width * (long int) true_height;
+
+		if (scaled_colors_buffer_size < buffer_size_required || scaled_colors == nullptr)
+		{
+			scaled_colors_buffer_size = (long int)true_width * (long int)true_height;
+	
+			if (scaled_colors != nullptr)
+				delete[] scaled_colors;
+			
+			scaled_colors = new c8Color[buffer_size_required];
+		}
 		long int c = 0;
 
 		for (int i = 0; i < true_height; i++)

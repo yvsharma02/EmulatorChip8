@@ -66,31 +66,31 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
 
     int unscaled_size_x = 64;
     int unscaled_size_y = 32;
-    main_window = new Chip8::C8Window(L"Chip8 Emulator", unscaled_size_x, unscaled_size_y, hInstance, nCmdShow);
+    main_window = new Chip8::C8Window(L"Chip8 Emulator", Chip8::UNSCALED_WDITH, Chip8::UNSCALED_HEIGHT, Chip8::UNSCALED_HEIGHT, Chip8::UNSCALED_HEIGHT, hInstance, nCmdShow);
     
     main_window->add_keyboard_event_listener(on_keyboard_event);
 
     Chip8::C8Keymapping key_mapping[16] =
     {
-        Chip8::C8Keymapping::C8Keymapping(0x34, Chip8::C8Keycode::ONE),     // 4
-        Chip8::C8Keymapping::C8Keymapping(0x35, Chip8::C8Keycode::TWO),     // 5
-        Chip8::C8Keymapping::C8Keymapping(0x36, Chip8::C8Keycode::THREE),   // 6
-        Chip8::C8Keymapping::C8Keymapping(0x37, Chip8::C8Keycode::C),       // 7
+        Chip8::C8Keymapping::C8Keymapping(0x31, Chip8::C8Keycode::ONE),     // 1
+        Chip8::C8Keymapping::C8Keymapping(0x32, Chip8::C8Keycode::TWO),     // 2
+        Chip8::C8Keymapping::C8Keymapping(0x33, Chip8::C8Keycode::THREE),   // 3
+        Chip8::C8Keymapping::C8Keymapping(0x34, Chip8::C8Keycode::C),       // 4
 
-        Chip8::C8Keymapping::C8Keymapping(0x52, Chip8::C8Keycode::FOUR),    // R
-        Chip8::C8Keymapping::C8Keymapping(0x54, Chip8::C8Keycode::FIVE),    // T
-        Chip8::C8Keymapping::C8Keymapping(0x59, Chip8::C8Keycode::SIX),     // Y
-        Chip8::C8Keymapping::C8Keymapping(0x55, Chip8::C8Keycode::D),       // U
+        Chip8::C8Keymapping::C8Keymapping(0x51, Chip8::C8Keycode::FOUR),    // Q
+        Chip8::C8Keymapping::C8Keymapping(0x57, Chip8::C8Keycode::FIVE),    // W
+        Chip8::C8Keymapping::C8Keymapping(0x45, Chip8::C8Keycode::SIX),     // E
+        Chip8::C8Keymapping::C8Keymapping(0x52, Chip8::C8Keycode::D),       // R
 
-        Chip8::C8Keymapping::C8Keymapping(0x46, Chip8::C8Keycode::SEVEN),   // F
-        Chip8::C8Keymapping::C8Keymapping(0x47, Chip8::C8Keycode::EIGHT),   // G
-        Chip8::C8Keymapping::C8Keymapping(0x48, Chip8::C8Keycode::NINE),    // H
-        Chip8::C8Keymapping::C8Keymapping(0x4A, Chip8::C8Keycode::E),       // J
+        Chip8::C8Keymapping::C8Keymapping(0x41, Chip8::C8Keycode::SEVEN),   // A
+        Chip8::C8Keymapping::C8Keymapping(0x53, Chip8::C8Keycode::EIGHT),   // S
+        Chip8::C8Keymapping::C8Keymapping(0x44, Chip8::C8Keycode::NINE),    // D
+        Chip8::C8Keymapping::C8Keymapping(0x46, Chip8::C8Keycode::E),       // F
 
-        Chip8::C8Keymapping::C8Keymapping(0x56, Chip8::C8Keycode::A),       // V
-        Chip8::C8Keymapping::C8Keymapping(0x42, Chip8::C8Keycode::ZERO),    // B
-        Chip8::C8Keymapping::C8Keymapping(0x4E, Chip8::C8Keycode::B),       // N
-        Chip8::C8Keymapping::C8Keymapping(0x4D, Chip8::C8Keycode::F),       // N
+        Chip8::C8Keymapping::C8Keymapping(0x5A, Chip8::C8Keycode::A),       // Z
+        Chip8::C8Keymapping::C8Keymapping(0x58, Chip8::C8Keycode::ZERO),    // X
+        Chip8::C8Keymapping::C8Keymapping(0x43, Chip8::C8Keycode::B),       // C
+        Chip8::C8Keymapping::C8Keymapping(0x56, Chip8::C8Keycode::F),       // V
     };
 
     main_window->set_key_map(key_mapping, 16);

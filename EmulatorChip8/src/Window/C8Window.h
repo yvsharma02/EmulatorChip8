@@ -20,7 +20,7 @@ namespace Chip8
 
 	public:
 #if PLATFORM_WINDOWS
-		C8Window(const std::wstring& name, int width, int height, HINSTANCE hInstance, INT nCmdShow);
+		C8Window(const std::wstring& name, int unscaled_width, int unscaled_height, int window_width, int window_height, HINSTANCE hInstance, INT nCmdShow);
 
 		void run_for_windows();
 #endif
@@ -62,6 +62,9 @@ namespace Chip8
 		int unscaled_width;
 		c8Color* unscaled_colors;
 		c8Color* scaled_colors;
+
+		int scaled_colors_buffer_size;
+
 		bool modifying_colors;
 
 		int true_height;
