@@ -74,7 +74,7 @@ namespace Chip8
 
 	c8byte C8Interpreter::generate_random_byte()
 	{
-		return 123;
+		return rand();
 	}
 
 	bool C8Interpreter::is_key_pressed(C8Keycode::C8Keycode keycode)
@@ -87,6 +87,7 @@ namespace Chip8
 		if (paused)
 			return;
 
+//		Sleep(1000);
 		run();
 	}
 
@@ -243,20 +244,26 @@ namespace Chip8
 			int x_coord = V[x] % UNSCALED_WIDTH;
 			int y_coord = V[y] % UNSCALED_HEIGHT;
 
-			for (int i = y_coord; (i < y_coord + nibble) && (i < UNSCALED_HEIGHT); i++)
+			for (int i = 0; i < nibble; i++)
 			{
+				if (y_coord + i >= UNSCALED_HEIGHT)
+					break;
+
 				c8byte row = memory[register_16 + i];
 
-				for (int j = x_coord; (j < x_coord + DEFAULT_SPRITE_WIDTH) && (j < UNSCALED_WIDTH); j++)
+				for (int j = 0; j < DEFAULT_SPRITE_WIDTH; j++)
 				{
-					int index = j * UNSCALED_WIDTH + i;
+					if (x_coord + j >= UNSCALED_WIDTH)
+						break;
 
-					bool open_now = (row & (0b0000001 << (j - x_coord))) != 0;
-					bool already_open = display_buffer[index];
+					int index = (y_coord + i) * UNSCALED_WIDTH + (x_coord + j);
 
-					display_buffer[index] = open_now ^ already_open;
+					bool open_now = (row & (0b10000000 >> j)) != 0;
+					bool was_open = display_buffer[index];
 
-					if (!display_buffer[index] && already_open)
+					display_buffer[index] = open_now ^ was_open;
+
+					if (!display_buffer[index] && was_open)
 						V[0xF] = 1;
 				}
 
