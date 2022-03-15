@@ -15,11 +15,14 @@ namespace Chip8
 	public:
 		C8Memory();
 		~C8Memory();
-//		c8byte getByte(int address) const;
-//		void setByte(int address);
 
 		int size() const;
 
 		c8byte& operator [](int address);
+
+		void get_stack_byte()
+		{
+
+		}
 	};
 }

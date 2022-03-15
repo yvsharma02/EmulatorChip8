@@ -25,11 +25,6 @@ namespace Chip8
 #if PLATFORM_WINDOWS
 		C8Window(const std::wstring& name, int window_width, int window_height, HINSTANCE hInstance, INT nCmdShow);
 #endif
-		// Color is an byte because c8 window is grayscale anyway.
-		void set_pixel_color(int x, int y, c8byte color);
-
-		void clear();
-
 		void run();
 
 		~C8Window();
@@ -38,6 +33,8 @@ namespace Chip8
 		// The array will be COPIED, not REFERENCED.
 		// The length of the array should be unscaled_height * unscaled_width, that will be scaled automatically.
 		void set_colors(c8byte* clrs);
+
+		void set_colors(bool* clrs);
 
 		// keycode here is the actual physical kerboard keycode. Not the chip8 specific one.
 		bool is_key_pressed(c8byte keyboard) const;
@@ -51,7 +48,7 @@ namespace Chip8
 		void add_window_event_listener(const c8_event_listener& listener);
 		void remove_window_event_listener(const c8_event_listener& listener);
 
-		// Parameter has two byte: 0th byte: keycode, 1st byte: Keystate.
+		// Parameter has two byte: 0th byte: key-state, 1st byte: key-code.
 		void add_keyboard_event_listener(const c8_event_listener& listener);
 		void remove_keyboard_event_listener(const c8_event_listener& listener);
 
@@ -93,6 +90,8 @@ namespace Chip8
 		void initialise_common_members();
 
 		void invoke_update_event(void* data);
+
+		bool process_messages();
 
 #if PLATFORM_WINDOWS
 		HWND hwnd;

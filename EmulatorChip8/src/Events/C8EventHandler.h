@@ -5,8 +5,6 @@
 
 namespace Chip8
 {
-//	typedef void (*c8_event_listener)(C8EventType);
-
 	using c8_event_listener = void(*)(C8EventType type, void* data);
 
 	class C8EventHandler

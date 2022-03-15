@@ -5,5 +5,5 @@
 
 namespace Chip8
 {
-	bool read_rom(std::wstring file_name, C8Memory& mem, c8short write_start_loc);
+	bool read_rom(const std::wstring& file_name, C8Memory& mem, c8short write_start_loc);
 }

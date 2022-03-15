@@ -4,7 +4,7 @@ namespace Chip8
 {
 #if PLATFORM_WINDOWS
 
-	bool Chip8::read_rom(std::wstring file_name, C8Memory& mem, c8short write_start_loc)
+	bool Chip8::read_rom(const std::wstring& file_name, C8Memory& mem, c8short write_start_loc)
 	{
 		HANDLE hFile = CreateFile(file_name.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 

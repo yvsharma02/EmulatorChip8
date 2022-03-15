@@ -13,21 +13,25 @@ namespace Chip8
 
 #if PLATFORM_WINDOWS
 	
+	bool C8Window::process_messages()
+	{
+		MSG Msg;
+		while (PeekMessage(&Msg, NULL, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&Msg);
+			DispatchMessage(&Msg);
+
+			if (Msg.message == WM_QUIT)
+				return false;
+		}
+
+		return true;
+	}
+
 	void C8Window::run()
 	{
-		while (true)
+		while (process_messages())
 		{
-			MSG msg;
-			while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
-			{
-				TranslateMessage(&msg);
-
-				DispatchMessage(&msg);
-			}
-
-			if (msg.message == WM_QUIT)
-				break;
-
 			invoke_update_event(nullptr);
 		}
 	}
@@ -205,7 +209,6 @@ namespace Chip8
 		keymap = nullptr;
 	}
 
-	// maybe create a large buffer instead of constantly allocating and deallocating.
 	void C8Window::calculate_scaled_colors(int true_width, int true_height)
 	{
 		if (unscaled_colors == nullptr)
@@ -213,15 +216,15 @@ namespace Chip8
 
 		modifying_colors = true;
 
-		long int buffer_size_required = (long int) true_width * (long int) true_height;
+		long int buffer_size_required = (long int)true_width * (long int)true_height;
 
 		if (scaled_colors_buffer_size < buffer_size_required || scaled_colors == nullptr)
 		{
-			scaled_colors_buffer_size = (long int)true_width * (long int)true_height;
-	
+			scaled_colors_buffer_size = buffer_size_required;
+
 			if (scaled_colors != nullptr)
 				delete[] scaled_colors;
-			
+
 			scaled_colors = new c8Color[buffer_size_required];
 		}
 		long int c = 0;
@@ -246,9 +249,31 @@ namespace Chip8
 		force_redraw();
 	}
 
+
 	void C8Window::invoke_update_event(void* data)
 	{
 		update_event_handler.invoke(Chip8::C8EventType::UPDATE, data);
+	}
+
+	void C8Window::set_colors(bool* clrs)
+	{
+		modifying_colors = true;
+
+		if (this->unscaled_colors == nullptr)
+			this->unscaled_colors = new c8Color[unscaled_height * unscaled_width];
+
+		int c = 0;
+		for (int i = 0; i < unscaled_height; i++)
+		{
+			for (int j = 0; j < unscaled_width; j++)
+			{
+				this->unscaled_colors[c] = (clrs[c] == true) ? 0xFFFFFF : 0;
+				c++;
+			}
+		}
+		calculate_scaled_colors(true_width, true_height);
+
+		modifying_colors = false;
 	}
 
 	void C8Window::set_colors(c8byte* clrs)
