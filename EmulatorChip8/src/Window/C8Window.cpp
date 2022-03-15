@@ -8,6 +8,8 @@
 
 #endif
 
+Chip8::C8Window* get_window();
+
 namespace Chip8
 {
 
@@ -34,6 +36,11 @@ namespace Chip8
 		{
 			invoke_update_event(nullptr);
 		}
+	}
+
+	void CALLBACK on_tick(HWND hwnd, UINT message, UINT id, DWORD dwTime)
+	{
+		get_window()->tick_timer_handler.invoke(C8EventType::CLOCK_TICK, nullptr);
 	}
 
 	LRESULT CALLBACK C8Window::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -163,13 +170,15 @@ namespace Chip8
 				MessageBox(NULL, L"Window Creation Failed!", L"Error!", MB_ICONEXCLAMATION | MB_OK);
 			}
 
+			SetTimer(hwnd, C8_CLOCK_TIMER_ID, CLOCK_TIME_MS, (TIMERPROC) on_tick);
+
 			SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)this);
 			SetLayeredWindowAttributes(hwnd, NULL, 255, LWA_ALPHA);
 
 			ShowWindow(hwnd, nCmdShow);
 		}
 	}
-
+	
 	bool C8Window::update_true_dimensions()
 	{
 		RECT rect;
@@ -330,6 +339,16 @@ namespace Chip8
 		keyboard_event_handler.remove_listener(listener);
 	}
 
+	void C8Window::add_tick_listener(const c8_event_listener& listener)
+	{
+		tick_timer_handler.add_listener(listener);
+	}
+
+	void C8Window::remove_tick_listener(const c8_event_listener& listener)
+	{
+		tick_timer_handler.remove_listener(listener);
+	}
+	
 	void C8Window::set_key_map(const Chip8::C8Keymapping* new_keymap, int length)
 	{
 		// maybe overwrite instead of re allocating?
@@ -349,6 +368,8 @@ namespace Chip8
 
 	C8Window::~C8Window()
 	{
+		KillTimer(hwnd, C8_CLOCK_TIMER_ID);
+
 		if (unscaled_colors != nullptr)
 			delete[] unscaled_colors;
 

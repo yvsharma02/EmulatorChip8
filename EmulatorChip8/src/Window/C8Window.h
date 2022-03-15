@@ -7,6 +7,10 @@
 
 #if PLATFORM_WINDOWS
 
+#define C8_CLOCK_TIMER_ID 1
+#define CLOCK_TIME_MS 2500
+
+
 #define C8_WINDOW_CLASS_NAME "Chip 8 Emulator"
 #define C8_L_WINDOW_CLASS_NAME __TEXT("Chip 8 Emulator")
 
@@ -48,6 +52,9 @@ namespace Chip8
 		void add_window_event_listener(const c8_event_listener& listener);
 		void remove_window_event_listener(const c8_event_listener& listener);
 
+		void add_tick_listener(const c8_event_listener& listener);
+		void remove_tick_listener(const c8_event_listener& listener);
+
 		// Parameter has two byte: 0th byte: key-state, 1st byte: key-code.
 		void add_keyboard_event_listener(const c8_event_listener& listener);
 		void remove_keyboard_event_listener(const c8_event_listener& listener);
@@ -57,6 +64,8 @@ namespace Chip8
 
 		// map will be cloned. old one will be discarded completely.
 		void set_key_map(const C8Keymapping* map, int len);
+
+		C8EventHandler tick_timer_handler;
 
 	private:
 		int unscaled_height;
@@ -73,7 +82,6 @@ namespace Chip8
 
 		C8EventHandler window_event_handler;
 		C8EventHandler keyboard_event_handler;
-
 		C8EventHandler update_event_handler;
 
 		C8Keymapping* keymap;

@@ -91,6 +91,12 @@ namespace Chip8
 		run();
 	}
 
+	void C8Interpreter::trigger_tick()
+	{
+		if (delay_register > 0)
+			delay_register -= 1;
+	}
+
 	bool C8Interpreter::load_rom(const std::wstring& loc)
 	{
 		return Chip8::read_rom(loc, memory, PROGRAM_MEM_START);
@@ -98,6 +104,9 @@ namespace Chip8
 
 	void C8Interpreter::run()
 	{
+//		if (delay_register > 0)
+//			delay_register -= 1;
+
 		c8byte high_byte = memory[get_pc()];
 		c8byte low_byte = memory[get_pc() + 1];
 
@@ -171,7 +180,6 @@ namespace Chip8
 			break;
 
 		case 0x8:
-
 			switch (nibble)
 			{
 			case 0:
@@ -181,10 +189,10 @@ namespace Chip8
 				V[x] |= V[y];
 				break;
 			case 2:
-				V[x] ^= V[y];
+				V[x] &= V[y];
 				break;
 			case 3:
-				V[x] |= V[y];
+				V[x] ^= V[y];
 				break;
 			case 4:
 			{
@@ -201,7 +209,7 @@ namespace Chip8
 
 			case 6:
 				V[0xF] = V[x] & 0x01;
-				V[x] /= 2;
+				V[x] = V[x] >> 1;
 				break;
 
 			case 7:
@@ -210,7 +218,8 @@ namespace Chip8
 				break;
 
 			case 0xE:
-				V[x] = high_byte & 0b1000000;
+				V[0xF] = ((V[x] & 0b10000000) != 0) ? 1 : 0;
+				V[x] = V[x] << 1;
 				break;
 
 			default:
@@ -358,7 +367,7 @@ namespace Chip8
 			case 0x65:
 			{
 				for (int i = 0; i <= x; i++)
-					V[i] = memory[register_16];
+					V[i] = memory[register_16 + i];
 				break;
 			}
 

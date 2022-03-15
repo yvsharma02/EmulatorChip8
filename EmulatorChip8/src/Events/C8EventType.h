@@ -6,6 +6,7 @@ namespace Chip8
 	{
 		WINDOW_RESCALE,
 		KEYBOARD_INPUT,
-		UPDATE
+		UPDATE,
+		CLOCK_TICK
 	};
 }

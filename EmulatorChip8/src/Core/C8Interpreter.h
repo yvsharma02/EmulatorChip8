@@ -32,7 +32,7 @@ namespace Chip8
 		void pause();
 	
 		void trigger_key(C8Keystate::C8Keystate keystate, C8Keycode::C8Keycode keycode);
-
+		void trigger_tick();
 		void trigger_update();
 
 		bool load_rom(const std::wstring& loc);
