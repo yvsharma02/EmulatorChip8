@@ -400,7 +400,7 @@ namespace Chip8
 			keys_pressed |= (1 << keycode);
 
 		if (keystate == Chip8::C8Keystate::RELEASED)
-			keys_pressed &= ~(1 << keycode); // may be wrong.
+			keys_pressed &= ~(1 << keycode);
 
 		play();
 	}

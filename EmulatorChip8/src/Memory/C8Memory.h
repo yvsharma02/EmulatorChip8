@@ -19,10 +19,5 @@ namespace Chip8
 		int size() const;
 
 		c8byte& operator [](int address);
-
-		void get_stack_byte()
-		{
-
-		}
 	};
 }

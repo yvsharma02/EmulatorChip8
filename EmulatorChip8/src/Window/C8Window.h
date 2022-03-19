@@ -68,6 +68,15 @@ namespace Chip8
 		C8EventHandler tick_timer_handler;
 
 	private:
+
+#if PLATFORM_WINDOWS
+		int client_start_x;
+		int client_start_y;
+
+		int client_end_x;
+		int client_end_y;
+#endif
+
 		int unscaled_height;
 		int unscaled_width;
 		c8Color* unscaled_colors;

@@ -11,9 +11,9 @@
 #define STACK_START 0x2
 
 // bytes
-#define STACK_SIZE 16 
+#define STACK_SIZE 32
 
-#define TEXT_SPRITE_MEM_STRART 0x3
+#define TEXT_SPRITE_MEM_STRART 0x4
 #define TEXT_SPRITE_SIZE_BYTES 5
 #define TEXT_SPRITE_COUNT 16
 

@@ -73,7 +73,7 @@ namespace Chip8
 				HDC src = CreateCompatibleDC(hdc);
 				SelectObject(src, bmp);
 
-				BitBlt(hdc, 0, 0, instance->true_width, instance->true_height, src, 0, 0, SRCCOPY);
+				BitBlt(hdc, instance->client_start_x, instance->client_start_y, instance->true_width, instance->true_height, src, 0, 0, SRCCOPY);
 
 				DeleteDC(hdc);
 				DeleteObject(bmp);
@@ -183,10 +183,16 @@ namespace Chip8
 	{
 		RECT rect;
 
-		if (GetWindowRect(hwnd, &rect))
+		if (GetClientRect(hwnd, &rect))
 		{
-			true_width = rect.right - rect.left;
-			true_height  = rect.bottom - rect.top;
+			client_start_x = rect.left;
+			client_end_x = rect.right;
+
+			client_start_y = rect.top;
+			client_end_y = rect.bottom;
+
+			true_width = (client_end_x - client_start_x);
+			true_height = (client_end_y - client_start_y);
 
 			calculate_scaled_colors(true_width, true_height);
 			return true;
