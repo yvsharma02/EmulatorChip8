@@ -38,7 +38,8 @@ namespace Chip8
 		bool load_rom(const std::wstring& loc);
 		int get_pc();
 
-		c8byte* get_memory_dump();
+		// DON'T FORGET TO delete the returned array
+		c8byte* create_memory_dump();
 
 	private:
 		C8Window& output_window;

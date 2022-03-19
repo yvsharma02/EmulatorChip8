@@ -264,10 +264,10 @@ namespace Chip8
 
 				for (int j = 0; j < DEFAULT_SPRITE_WIDTH; j++)
 				{
-					if (x_coord + j >= UNSCALED_WIDTH)
+					if (x_coord + j >= UNSCALED_WIDTH || x_coord + j < 0)
 						break;
 
-					int index = (y_coord + i) * UNSCALED_WIDTH + (x_coord + j);
+					int index = (y_coord + i) * UNSCALED_WIDTH + (x_coord + j - 1);
 
 					bool open_now = (row & (0b10000000 >> j)) != 0;
 					bool was_open = display_buffer[index];
@@ -384,7 +384,8 @@ namespace Chip8
 		increment_pc();
 	}
 
-	c8byte* C8Interpreter::get_memory_dump()
+	// DON'T FORGET TO delete the returned array
+	c8byte* C8Interpreter::create_memory_dump()
 	{
 		c8byte* dump = new c8byte[C8_MEMORY_SIZE];
 

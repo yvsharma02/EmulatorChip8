@@ -16,7 +16,7 @@
 
 #endif
 
-#define UNSCALED_HEIGHT 128
+#define UNSCALED_HEIGHT 32
 #define UNSCALED_WIDTH 64
 
 namespace Chip8
