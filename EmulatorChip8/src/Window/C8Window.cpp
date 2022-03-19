@@ -75,7 +75,7 @@ namespace Chip8
 
 				BitBlt(hdc, instance->client_start_x, instance->client_start_y, instance->true_width, instance->true_height, src, 0, 0, SRCCOPY);
 
-				DeleteDC(hdc);
+				DeleteDC(src);
 				DeleteObject(bmp);
 
 				EndPaint(hwnd, &ps);

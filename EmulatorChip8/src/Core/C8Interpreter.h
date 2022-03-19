@@ -47,6 +47,7 @@ namespace Chip8
 		C8Memory memory;
 
 		bool* display_buffer;// [UNSCALED_HEIGHT * UNSCALED_WIDTH] ;
+		bool display_buffer_changed = false;
 
 		c8byte V[16];
 		c8short register_16;

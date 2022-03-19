@@ -87,10 +87,10 @@ namespace Chip8
 		if (paused)
 			return;
 
-		
-
-//		Sleep(1000);
 		run();
+
+		if (display_buffer_changed)
+			update_display();
 	}
 
 	void C8Interpreter::trigger_tick()
@@ -278,7 +278,7 @@ namespace Chip8
 						V[0xF] = 1;
 				}
 
-				update_display();
+				display_buffer_changed = true;
 			}
 		}
 			break;
@@ -402,8 +402,6 @@ namespace Chip8
 
 		if (keystate == Chip8::C8Keystate::RELEASED)
 			keys_pressed &= ~(1 << keycode);
-
-		play();
 	}
 
 	void C8Interpreter::pause()
@@ -419,6 +417,7 @@ namespace Chip8
 	void C8Interpreter::update_display()
 	{
 		output_window.set_colors(display_buffer);
+		display_buffer_changed = false;
 	}
 
 	void C8Interpreter::clear_screen()
