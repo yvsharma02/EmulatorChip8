@@ -8,7 +8,7 @@
 #if PLATFORM_WINDOWS
 
 #define C8_CLOCK_TIMER_ID 1
-#define CLOCK_TIME_MS 2500
+#define CLOCK_TIME_MS 1
 
 
 #define C8_WINDOW_CLASS_NAME "Chip 8 Emulator"
@@ -16,8 +16,9 @@
 
 #endif
 
-#define UNSCALED_HEIGHT 32
-#define UNSCALED_WIDTH 64
+// 32 + 1, and 64 + 1 are intentional.
+#define UNSCALED_HEIGHT 33
+#define UNSCALED_WIDTH 65
 
 namespace Chip8
 {

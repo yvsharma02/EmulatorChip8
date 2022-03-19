@@ -95,8 +95,8 @@ namespace Chip8
 
 	void C8Interpreter::trigger_tick()
 	{
-//		if (delay_register > 0)
-//			delay_register -= 1;
+		if (delay_register > 0)
+			delay_register -= 1;
 	}
 
 	bool C8Interpreter::load_rom(const std::wstring& loc)
@@ -106,8 +106,8 @@ namespace Chip8
 
 	void C8Interpreter::run()
 	{
-		if (delay_register > 0)
-			delay_register -= 1;
+//		if (delay_register > 0)
+//			delay_register -= 1;
 
 		c8byte high_byte = memory[get_pc()];
 		c8byte low_byte = memory[get_pc() + 1];
@@ -257,17 +257,20 @@ namespace Chip8
 
 			for (int i = 0; i < nibble; i++)
 			{
-				if (y_coord + i >= UNSCALED_HEIGHT)
+				if (y_coord + i > UNSCALED_HEIGHT)
 					break;
 
 				c8byte row = memory[register_16 + i];
 
 				for (int j = 0; j < DEFAULT_SPRITE_WIDTH; j++)
 				{
-					if (x_coord + j >= UNSCALED_WIDTH || x_coord + j < 0)
+					if (x_coord + j > UNSCALED_WIDTH)
 						break;
 
-					int index = (y_coord + i) * UNSCALED_WIDTH + (x_coord + j - 1);
+					int index = (y_coord + i) * UNSCALED_WIDTH + (x_coord + j);
+
+					if (index >= UNSCALED_HEIGHT * UNSCALED_WIDTH)
+						break;
 
 					bool open_now = (row & (0b10000000 >> j)) != 0;
 					bool was_open = display_buffer[index];
@@ -425,7 +428,7 @@ namespace Chip8
 		int c = 0;
 		for (int i = 0; i < UNSCALED_HEIGHT; i++)
 			for (int j = 0; j < UNSCALED_WIDTH; j++)
-				display_buffer[c++] = true;
+				display_buffer[c++] = false;
 
 		update_display();
 	}
