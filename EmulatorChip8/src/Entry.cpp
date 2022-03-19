@@ -69,11 +69,6 @@ void on_update(Chip8::C8EventType type, void* data)
     interpreter->trigger_update();
 }
 
-void on_tick(Chip8::C8EventType type, void* data)
-{
-    interpreter->trigger_tick();
-}
-
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nCmdShow)
 {
     main_window = new Chip8::C8Window(L"Chip8 Emulator", Chip8::DEFAULT_WINDOW_WIDTH, Chip8::DEFAULT_WINDOW_WIDTH, hInstance, nCmdShow);
@@ -103,15 +98,12 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
         Chip8::C8Keymapping::C8Keymapping(0x56, Chip8::C8Keycode::F),       // V
     };
 
-//    set_colors(UNSCALED_WIDTH, UNSCALED_HEIGHT);
-
     main_window->set_key_map(key_mapping, 16);
 
     interpreter = new Chip8::C8Interpreter(*main_window);
     bool load_successful = interpreter->load_rom(L"../TestROMs/pong.ch8");
 
     main_window->add_update_event_listener(on_update);
-    main_window->add_tick_listener(on_tick);
     interpreter->play();
 
     main_window->run();

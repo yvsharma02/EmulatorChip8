@@ -18,6 +18,7 @@
 #define TEXT_SPRITE_COUNT 16
 
 #define CLOCK_WAIT_TIME_MICRO_SEC 7500
+#define DELAY_TIMER_TICK_SPEED_MICRO_SEC 20000
 
 #define DEFAULT_SPRITE_WIDTH 8
 
@@ -62,6 +63,8 @@ namespace Chip8
 		// a bit-field.
 		c8short keys_pressed;
 
+		long last_delay_timer_tick_time;
+
 		bool paused;
 
 		void load_text_sprites();
@@ -86,7 +89,8 @@ namespace Chip8
 		void skip_next_instruction();
 		void increment_pc();
 
-		void wait_for_clock();
+		void wait_for_cpu_clock();
+		void update_delay_register();
 
 		bool is_key_pressed(C8Keycode::C8Keycode keycode);
 

@@ -38,11 +38,6 @@ namespace Chip8
 		}
 	}
 
-	void CALLBACK on_tick(HWND hwnd, UINT message, UINT id, DWORD dwTime)
-	{
-		get_window()->tick_timer_handler.invoke(C8EventType::CLOCK_TICK, nullptr);
-	}
-
 	LRESULT CALLBACK C8Window::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
 		C8Window* instance = (C8Window*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
@@ -170,8 +165,6 @@ namespace Chip8
 				MessageBox(NULL, L"Window Creation Failed!", L"Error!", MB_ICONEXCLAMATION | MB_OK);
 			}
 
-			SetTimer(hwnd, C8_CLOCK_TIMER_ID, CLOCK_TIME_MS, (TIMERPROC) on_tick);
-
 			SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)this);
 			SetLayeredWindowAttributes(hwnd, NULL, 255, LWA_ALPHA);
 
@@ -211,7 +204,7 @@ namespace Chip8
 		LARGE_INTEGER* time = &(LARGE_INTEGER());
 		QueryPerformanceCounter(time);
 
-		return time->QuadPart;
+		return (((long) time->HighPart << 32) | time->LowPart);
 	}
 
 #endif
@@ -352,16 +345,6 @@ namespace Chip8
 	{
 		keyboard_event_handler.remove_listener(listener);
 	}
-
-	void C8Window::add_tick_listener(const c8_event_listener& listener)
-	{
-		tick_timer_handler.add_listener(listener);
-	}
-
-	void C8Window::remove_tick_listener(const c8_event_listener& listener)
-	{
-		tick_timer_handler.remove_listener(listener);
-	}
 	
 	void C8Window::set_key_map(const Chip8::C8Keymapping* new_keymap, int length)
 	{
@@ -382,8 +365,6 @@ namespace Chip8
 
 	C8Window::~C8Window()
 	{
-		KillTimer(hwnd, C8_CLOCK_TIMER_ID);
-
 		if (unscaled_colors != nullptr)
 			delete[] unscaled_colors;
 
