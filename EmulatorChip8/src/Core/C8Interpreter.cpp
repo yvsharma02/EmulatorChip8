@@ -87,14 +87,16 @@ namespace Chip8
 		if (paused)
 			return;
 
+		
+
 //		Sleep(1000);
 		run();
 	}
 
 	void C8Interpreter::trigger_tick()
 	{
-		if (delay_register > 0)
-			delay_register -= 1;
+//		if (delay_register > 0)
+//			delay_register -= 1;
 	}
 
 	bool C8Interpreter::load_rom(const std::wstring& loc)
@@ -104,8 +106,8 @@ namespace Chip8
 
 	void C8Interpreter::run()
 	{
-//		if (delay_register > 0)
-//			delay_register -= 1;
+		if (delay_register > 0)
+			delay_register -= 1;
 
 		c8byte high_byte = memory[get_pc()];
 		c8byte low_byte = memory[get_pc() + 1];
@@ -131,7 +133,7 @@ namespace Chip8
 
 				int addr_stack_top = (high << 8) | low;
 				set_pc(addr_stack_top);
-				return;
+				break;
 			}
 			break;
 
