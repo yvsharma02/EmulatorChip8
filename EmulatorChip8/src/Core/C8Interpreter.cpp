@@ -91,7 +91,22 @@ namespace Chip8
 
 		if (display_buffer_changed)
 			update_display();
+
+		wait_for_clock();
 	}
+
+#if PLATFORM_WINDOWS
+
+	void C8Interpreter::wait_for_clock()
+	{
+		long start_time = output_window.get_current_time();
+		long cur_time = output_window.get_current_time();
+
+		while (cur_time - start_time < CLOCK_WAIT_TIME_MICRO_SEC)
+			cur_time = output_window.get_current_time();
+	}
+
+#endif
 
 	void C8Interpreter::trigger_tick()
 	{

@@ -17,6 +17,8 @@
 #define TEXT_SPRITE_SIZE_BYTES 5
 #define TEXT_SPRITE_COUNT 16
 
+#define CLOCK_WAIT_TIME_MICRO_SEC 7500
+
 #define DEFAULT_SPRITE_WIDTH 8
 
 namespace Chip8
@@ -83,6 +85,8 @@ namespace Chip8
 
 		void skip_next_instruction();
 		void increment_pc();
+
+		void wait_for_clock();
 
 		bool is_key_pressed(C8Keycode::C8Keycode keycode);
 

@@ -68,6 +68,8 @@ namespace Chip8
 
 		C8EventHandler tick_timer_handler;
 
+		long get_current_time();
+
 	private:
 
 #if PLATFORM_WINDOWS

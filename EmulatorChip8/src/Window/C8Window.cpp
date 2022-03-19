@@ -206,6 +206,14 @@ namespace Chip8
 		InvalidateRect(hwnd, nullptr, true);
 	}
 
+	long C8Window::get_current_time()
+	{
+		LARGE_INTEGER* time = &(LARGE_INTEGER());
+		QueryPerformanceCounter(time);
+
+		return time->QuadPart;
+	}
+
 #endif
 
 	void C8Window::initialise_common_members()
