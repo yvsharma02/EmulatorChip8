@@ -16,6 +16,8 @@ namespace Chip8
 		C8Memory();
 		~C8Memory();
 
+		void clear();
+
 		int size() const;
 
 		c8byte& operator [](int address);

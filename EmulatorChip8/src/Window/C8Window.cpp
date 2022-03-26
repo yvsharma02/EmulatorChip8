@@ -169,8 +169,22 @@ namespace Chip8
 				{
 					OPENFILENAME ofn;
 					instance->GetFileToLoadDetails(hwnd, ofn);
-					WCHAR* str = ofn.lpstrFile;
+
+					int file_path_len = 0;
+
+					while (ofn.lpstrFile[file_path_len] != '\0')
+						file_path_len++;
+
+					WCHAR* str = new WCHAR[file_path_len + 1];
+
+					for (int i = 0; i < file_path_len; i++)
+						str[i] = ofn.lpstrFile[i];
+
+					str[file_path_len] = '\0';
+
 					instance->load_rom_event_hander.invoke(Chip8::C8EventType::LOAD_ROM, str);
+
+					delete[] str;
 				}
 				break;
 			}

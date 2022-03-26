@@ -4,13 +4,14 @@ namespace Chip8
 {
 	C8Interpreter::C8Interpreter(C8Window& output_window) : output_window(output_window), memory(C8Memory())
 	{
-		load_text_sprites();
 		reset();
 		paused = true;
 	}
 
 	void C8Interpreter::reset()
 	{
+		memory.clear();
+
 		stack_pointer = STACK_START;
 		program_counter = PROGRAM_MEM_START;
 		last_delay_timer_tick_time = output_window.get_current_time();
@@ -24,6 +25,7 @@ namespace Chip8
 		for (int i = 0; i < 16; i++)
 			V[i] = 0;
 
+		load_text_sprites();
 		clear_screen();
 	}
 

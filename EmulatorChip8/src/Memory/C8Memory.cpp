@@ -26,4 +26,10 @@ namespace Chip8
 	{
 		return dataSize;
 	}
+
+	void C8Memory::clear()
+	{
+		for (int i = 0; i < C8_MEMORY_SIZE; i++)
+			data[i] = 0;
+	}
 };
