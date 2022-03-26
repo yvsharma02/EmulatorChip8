@@ -264,6 +264,7 @@ namespace Chip8
 			true_height = (client_end_y - client_start_y);
 
 			calculate_scaled_colors(true_width, true_height);
+			force_redraw();
 			return true;
 		}
 

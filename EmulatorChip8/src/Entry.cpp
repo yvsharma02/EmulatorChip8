@@ -28,6 +28,7 @@ void on_load_rom(Chip8::C8EventType type, void* data)
 {
     WCHAR* file_name = (WCHAR*)data;
     interpreter->load_rom(std::wstring(file_name));
+    interpreter->play();
 }
 
 
@@ -63,11 +64,10 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
     main_window->set_key_map(key_mapping, 16);
 
     interpreter = new Chip8::C8Interpreter(*main_window);
-    bool load_successful = interpreter->load_rom(L"../TestROMs/pong.ch8");
+//    bool load_successful = interpreter->load_rom(L"../TestROMs/pong.ch8");
 
     main_window->add_update_event_listener(on_update);
     main_window->add_load_rom_event_listener(on_load_rom);
-    interpreter->play();
 
     main_window->run();
 
