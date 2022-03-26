@@ -64,11 +64,12 @@ namespace Chip8
 		c8short keys_pressed;
 
 		long last_delay_timer_tick_time;
+		long last_cpu_tick_time;
 
 		bool paused;
 
 		void load_text_sprites();
-		void run();
+		void execute_cpu_cycle();
 
 		void clear_screen();
 
@@ -89,8 +90,10 @@ namespace Chip8
 		void skip_next_instruction();
 		void increment_pc();
 
-		void wait_for_cpu_clock();
+		void run();
 		void update_delay_register();
+
+		void reset();
 
 		bool is_key_pressed(C8Keycode::C8Keycode keycode);
 

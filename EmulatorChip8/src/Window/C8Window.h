@@ -10,6 +10,15 @@
 #define C8_WINDOW_CLASS_NAME "Chip 8 Emulator"
 #define C8_L_WINDOW_CLASS_NAME __TEXT("Chip 8 Emulator")
 
+#define QUIT_BTN_ID 0
+#define QUIT_BUTTON_LABEL L"Quit"
+
+#define LOAD_ROM_BTN_ID 1
+#define LOAD_ROM_BUTTON_LABEL L"Load ROM"
+
+// per second.
+#define REFRESH_RATE 10
+
 #endif
 
 // 32 + 1, and 64 + 1 are intentional.
@@ -25,6 +34,8 @@ namespace Chip8
 	public:
 #if PLATFORM_WINDOWS
 		C8Window(const std::wstring& name, int window_width, int window_height, HINSTANCE hInstance, INT nCmdShow);
+
+		bool GetFileToLoadDetails(HWND hwnd, OPENFILENAME& details);
 #endif
 		void run();
 
@@ -56,6 +67,9 @@ namespace Chip8
 		void add_update_event_listener(const c8_event_listener& listener);
 		void remove_update_event_listener(const c8_event_listener& listener);
 
+		void add_load_rom_event_listener(const c8_event_listener& listener);
+		void remove_load_rom_event_listener(const c8_event_listener& listener);
+
 		// map will be cloned. old one will be discarded completely.
 		void set_key_map(const C8Keymapping* map, int len);
 
@@ -73,10 +87,13 @@ namespace Chip8
 		int client_end_y;
 #endif
 
+		long time_since_last_refresh;
+
 		int unscaled_height;
 		int unscaled_width;
 		c8Color* unscaled_colors;
 		c8Color* scaled_colors;
+		bool screen_modified;
 
 		int scaled_colors_buffer_size;
 
@@ -88,6 +105,7 @@ namespace Chip8
 		C8EventHandler window_event_handler;
 		C8EventHandler keyboard_event_handler;
 		C8EventHandler update_event_handler;
+		C8EventHandler load_rom_event_hander;
 
 		C8Keymapping* keymap;
 		int keymap_length;

@@ -4,9 +4,17 @@ namespace Chip8
 {
 	C8Interpreter::C8Interpreter(C8Window& output_window) : output_window(output_window), memory(C8Memory())
 	{
+		load_text_sprites();
+		reset();
+		paused = true;
+	}
+
+	void C8Interpreter::reset()
+	{
 		stack_pointer = STACK_START;
 		program_counter = PROGRAM_MEM_START;
 		last_delay_timer_tick_time = output_window.get_current_time();
+		last_cpu_tick_time = output_window.get_current_time();
 
 		display_buffer = new bool[UNSCALED_HEIGHT * UNSCALED_WIDTH];
 
@@ -16,9 +24,6 @@ namespace Chip8
 		for (int i = 0; i < 16; i++)
 			V[i] = 0;
 
-		paused = true;
-
-		load_text_sprites();
 		clear_screen();
 	}
 
@@ -85,16 +90,9 @@ namespace Chip8
 
 	void C8Interpreter::trigger_update()
 	{
-		if (paused)
-			return;
-
-		run();
-
-		if (display_buffer_changed)
-			update_display();
-
+		update_display();
 		update_delay_register();
-		wait_for_cpu_clock();
+		run();
 	}
 
 	void C8Interpreter::update_delay_register()
@@ -109,13 +107,18 @@ namespace Chip8
 		}
 	}
 
-	void C8Interpreter::wait_for_cpu_clock()
+	void C8Interpreter::run()
 	{
-		long start_time = output_window.get_current_time();
+		if (paused)
+			return;
+
 		long cur_time = output_window.get_current_time();
 
-		while (cur_time - start_time < CLOCK_WAIT_TIME_MICRO_SEC)
-			cur_time = output_window.get_current_time();
+		if (cur_time - last_cpu_tick_time >= CLOCK_WAIT_TIME_MICRO_SEC)
+		{
+			execute_cpu_cycle();
+			last_cpu_tick_time = cur_time;
+		}
 	}
 
 	void C8Interpreter::trigger_tick()
@@ -126,14 +129,12 @@ namespace Chip8
 
 	bool C8Interpreter::load_rom(const std::wstring& loc)
 	{
+		reset();
 		return Chip8::read_rom(loc, memory, PROGRAM_MEM_START);
 	}
 
-	void C8Interpreter::run()
+	void C8Interpreter::execute_cpu_cycle()
 	{
-//		if (delay_register > 0)
-//			delay_register -= 1;
-
 		c8byte high_byte = memory[get_pc()];
 		c8byte low_byte = memory[get_pc() + 1];
 
@@ -444,6 +445,9 @@ namespace Chip8
 
 	void C8Interpreter::update_display()
 	{
+		if (!display_buffer)
+			return;
+
 		output_window.set_colors(display_buffer);
 		display_buffer_changed = false;
 	}
@@ -455,6 +459,7 @@ namespace Chip8
 			for (int j = 0; j < UNSCALED_WIDTH; j++)
 				display_buffer[c++] = false;
 
+		display_buffer_changed = true;
 		update_display();
 	}
 

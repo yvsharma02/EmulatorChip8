@@ -35,7 +35,38 @@ namespace Chip8
 		while (process_messages())
 		{
 			invoke_update_event(nullptr);
+
+			long cur_time = get_current_time();
+			if (cur_time - time_since_last_refresh >= (1000.0f * 1000.0f / REFRESH_RATE))
+			{
+				time_since_last_refresh = cur_time;
+				if (screen_modified)
+					force_redraw();
+			}
+
 		}
+	}
+
+	bool C8Window::GetFileToLoadDetails(HWND hwnd, OPENFILENAME& ofn)
+	{
+		ofn = { 0 };
+		WCHAR szFile[260] = { 0 };
+
+		ofn.lStructSize = sizeof(ofn);
+		ofn.hwndOwner = hwnd;
+		ofn.lpstrFile = szFile;
+		ofn.nMaxFile = sizeof(szFile);
+		ofn.lpstrFilter = __TEXT("Chip8 ROMs\0*.c8;*.chip8;*.ch8\0\0");
+		ofn.nFilterIndex = 1;
+		ofn.lpstrFileTitle = NULL;
+		ofn.nMaxFileTitle = 0;
+		ofn.lpstrInitialDir = NULL;
+		ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+
+		if (GetOpenFileName(&ofn) == TRUE)
+			return true;
+
+		return false;
 	}
 
 	LRESULT CALLBACK C8Window::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -59,8 +90,9 @@ namespace Chip8
 
 		case WM_PAINT:
 		{
-			if (!instance->modifying_colors && instance->scaled_colors != nullptr)
+			if (!instance->modifying_colors && instance->scaled_colors != nullptr && instance->screen_modified)
 			{
+				instance->screen_modified = false;
 				PAINTSTRUCT ps;
 				HDC hdc = BeginPaint(hwnd, &ps);
 				
@@ -124,6 +156,27 @@ namespace Chip8
 		}
 		break;
 
+		case WM_COMMAND:
+		{
+			int id = LOWORD(wParam);
+
+			switch (id)
+			{
+				case QUIT_BTN_ID:
+					PostQuitMessage(0);
+					break;
+				case LOAD_ROM_BTN_ID:
+				{
+					OPENFILENAME ofn;
+					instance->GetFileToLoadDetails(hwnd, ofn);
+					WCHAR* str = ofn.lpstrFile;
+					instance->load_rom_event_hander.invoke(Chip8::C8EventType::LOAD_ROM, str);
+				}
+				break;
+			}
+		}
+		break;
+
 		default:
 			return DefWindowProc(hwnd, msg, wParam, lParam);
 
@@ -169,6 +222,15 @@ namespace Chip8
 			SetLayeredWindowAttributes(hwnd, NULL, 255, LWA_ALPHA);
 
 			ShowWindow(hwnd, nCmdShow);
+
+			HMENU fileMenu = CreateMenu();
+
+			WCHAR quitButtonTxt[] = QUIT_BUTTON_LABEL;
+			WCHAR loadROMButtonTxt[] = LOAD_ROM_BUTTON_LABEL;
+			AppendMenuW(fileMenu, MF_STRING, QUIT_BTN_ID, quitButtonTxt);
+			AppendMenuW(fileMenu, MF_STRING, LOAD_ROM_BTN_ID, loadROMButtonTxt);
+
+			SetMenu(hwnd, fileMenu);
 		}
 	}
 	
@@ -214,15 +276,15 @@ namespace Chip8
 		unscaled_height = UNSCALED_HEIGHT;
 		unscaled_width = UNSCALED_WIDTH;
 
-		window_event_handler = C8EventHandler();
-		update_event_handler = C8EventHandler();
-		keyboard_event_handler = C8EventHandler();
-
 		scaled_colors_buffer_size = 0;
 
 		unscaled_colors = nullptr;
 		scaled_colors = nullptr;
 		keymap = nullptr;
+
+		screen_modified = false;
+
+		time_since_last_refresh = get_current_time();
 	}
 
 	void C8Window::calculate_scaled_colors(int true_width, int true_height)
@@ -243,8 +305,8 @@ namespace Chip8
 
 			scaled_colors = new c8Color[buffer_size_required];
 		}
-		long int c = 0;
 
+		long int c = 0;
 		for (int i = 0; i < true_height; i++)
 		{
 			for (int j = 0; j < true_width; j++)
@@ -261,8 +323,9 @@ namespace Chip8
 			}
 		}
 
+		screen_modified = true;
 		modifying_colors = false;
-		force_redraw();
+//		force_redraw();
 	}
 
 
@@ -324,6 +387,16 @@ namespace Chip8
 	void C8Window::remove_update_event_listener(const c8_event_listener& listener)
 	{
 		update_event_handler.remove_listener(listener);
+	}
+
+	void C8Window::add_load_rom_event_listener(const c8_event_listener& listener)
+	{
+		load_rom_event_hander.add_listener(listener);
+	}
+
+	void C8Window::remove_load_rom_event_listener(const c8_event_listener& listener)
+	{
+		load_rom_event_hander.remove_listener(listener);
 	}
 
 	void C8Window::add_window_event_listener(const c8_event_listener& listener)

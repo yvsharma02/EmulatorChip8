@@ -7,6 +7,7 @@ namespace Chip8
 		WINDOW_RESCALE,
 		KEYBOARD_INPUT,
 		UPDATE,
-		CLOCK_TICK
+		CLOCK_TICK,
+		LOAD_ROM
 	};
 }
