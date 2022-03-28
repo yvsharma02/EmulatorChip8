@@ -191,6 +191,10 @@ namespace Chip8
 		}
 		break;
 
+		case WM_ERASEBKGND:
+			// DO Nothing.
+			return DefWindowProc(hwnd, WM_PAINT, wParam, lParam);
+
 		default:
 			return DefWindowProc(hwnd, msg, wParam, lParam);
 
