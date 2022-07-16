@@ -14,8 +14,8 @@ namespace Chip8
 
 		stack_pointer = STACK_START;
 		program_counter = PROGRAM_MEM_START;
-		last_delay_timer_tick_time = output_window.get_current_time();
-		last_cpu_tick_time = output_window.get_current_time();
+		last_delay_timer_tick_time = output_window.get_current_microsec();
+		last_cpu_tick_time = output_window.get_current_microsec();
 
 		display_buffer = new bool[UNSCALED_HEIGHT * UNSCALED_WIDTH];
 
@@ -99,9 +99,9 @@ namespace Chip8
 
 	void C8Interpreter::update_delay_register()
 	{
-		long current_time = output_window.get_current_time();
+		c8long current_time = output_window.get_current_microsec();
 
-		if (current_time - last_delay_timer_tick_time >= DELAY_TIMER_TICK_SPEED_MICRO_SEC)
+		if (current_time - last_delay_timer_tick_time >= hz_to_delta_microsec(DELAY_TIMER_CLOCK))
 		{
 			last_delay_timer_tick_time = current_time;
 			if (delay_register > 0)
@@ -114,12 +114,12 @@ namespace Chip8
 		if (paused)
 			return;
 
-		long cur_time = output_window.get_current_time();
+		c8long cur_time = output_window.get_current_microsec();
 
-		if (cur_time - last_cpu_tick_time >= CLOCK_WAIT_TIME_MICRO_SEC)
+		if (cur_time - last_cpu_tick_time >= hz_to_delta_microsec(CLOCK_FREQUENCY))
 		{
-			execute_cpu_cycle();
 			last_cpu_tick_time = cur_time;
+			execute_cpu_cycle();
 		}
 	}
 

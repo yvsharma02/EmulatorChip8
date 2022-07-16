@@ -17,8 +17,8 @@
 #define TEXT_SPRITE_SIZE_BYTES 5
 #define TEXT_SPRITE_COUNT 16
 
-#define CLOCK_WAIT_TIME_MICRO_SEC 7500
-#define DELAY_TIMER_TICK_SPEED_MICRO_SEC 20000
+#define CLOCK_FREQUENCY 500.0
+#define DELAY_TIMER_CLOCK 60.0
 
 #define DEFAULT_SPRITE_WIDTH 8
 
@@ -63,8 +63,8 @@ namespace Chip8
 		// a bit-field.
 		c8short keys_pressed;
 
-		long last_delay_timer_tick_time;
-		long last_cpu_tick_time;
+		c8long last_delay_timer_tick_time;
+		c8long last_cpu_tick_time;
 
 		bool paused;
 

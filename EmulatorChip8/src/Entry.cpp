@@ -34,8 +34,8 @@ void on_load_rom(Chip8::C8EventType type, void* data)
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nCmdShow)
 {
-    main_window = new Chip8::C8Window(L"Chip8 Emulator", Chip8::DEFAULT_WINDOW_WIDTH, Chip8::DEFAULT_WINDOW_WIDTH, hInstance, nCmdShow);
-    
+    main_window = new Chip8::C8Window(L"Chip8 Emulator", Chip8::DEFAULT_WINDOW_WIDTH, Chip8::DEFAULT_WINDOW_HEIGHT, hInstance, nCmdShow);
+
     main_window->add_keyboard_event_listener(on_keyboard_event);
 
     Chip8::C8Keymapping key_mapping[16] =

@@ -36,8 +36,8 @@ namespace Chip8
 		{
 			invoke_update_event(nullptr);
 
-			long cur_time = get_current_time();
-			if (cur_time - time_since_last_refresh >= (1000.0f * 1000.0f / REFRESH_RATE))
+			c8long cur_time = get_current_microsec();
+			if (cur_time - time_since_last_refresh >= hz_to_delta_microsec(REFRESH_RATE))
 			{
 				time_since_last_refresh = cur_time;
 				if (screen_modified)
@@ -280,12 +280,12 @@ namespace Chip8
 		InvalidateRect(hwnd, nullptr, true);
 	}
 
-	long C8Window::get_current_time()
+	c8long C8Window::get_current_microsec()
 	{
 		LARGE_INTEGER* time = &(LARGE_INTEGER());
 		QueryPerformanceCounter(time);
 
-		return (((long) time->HighPart << 32) | time->LowPart);
+		return (((c8long) time->HighPart << 32) | time->LowPart);
 	}
 
 #endif
@@ -303,7 +303,7 @@ namespace Chip8
 
 		screen_modified = false;
 
-		time_since_last_refresh = get_current_time();
+		time_since_last_refresh = get_current_microsec();
 	}
 
 	void C8Window::calculate_scaled_colors(int true_width, int true_height)

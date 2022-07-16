@@ -17,7 +17,7 @@
 #define LOAD_ROM_BUTTON_LABEL L"Load ROM"
 
 // per second.
-#define REFRESH_RATE 10
+#define REFRESH_RATE 144
 
 #endif
 
@@ -75,7 +75,7 @@ namespace Chip8
 
 		C8EventHandler tick_timer_handler;
 
-		long get_current_time();
+		c8long get_current_microsec();
 
 	private:
 
